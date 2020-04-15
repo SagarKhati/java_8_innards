@@ -1,0 +1,105 @@
+Type Annotations
+=================
+With java 8, annotations can also be applied to any type use.
+The compiler can then verify these annotations, for example identifying uses of null values, accidental value modifications, and cases where data crosses a trust boundary without proper validation.
+By moving some annotatable information from the Javadoc (understood only by people), and into the code (understood by both people and analyzers), it is easier to understand intent and verify the absence of certain errors.
+Type Annotations tell analyzers what to look for. Without the Type Annotations in place, these analyzers would still be able to locate null-usage and write-modifications but would not know that they are wrong. The result would then be false negatives (no issue reported) or false positives (incorrect issues reported).
+
+
+List of Type Annotations
+=========================
+@NonNull – The compiler can determine cases where a code path might receive a null value, without ever having to debug a NullPointerException.
+@ReadOnly – The compiler will flag any attempt to change the object. This is similar to Collections.unmodifiableList, but more general and verified at compile time.
+@Regex – Provides compile-time verification that a String intended to be used as a regular expression is a properly formatted regular expression.
+@Tainted and @Untainted – Identity types of data that should not be used together, such as remote user input being used in system commands, or sensitive information in log streams.
+@m – Units of measure ensures that numbers used for measuring objects are used and compared correctly, or have undergone the proper unit conversion.
+
+
+Examples
+=========
+@NonNull List<String> A non-null list of Strings.
+List<@NonNull String> A list of non-null Strings.
+@Regex String validation = "(Java|JDK) [7,8]" Compile time validation that this String is a valid regular expression.
+private String getInput(String parameterName){
+final String retval = @Tainted request.getParameter(parameterName);
+  return retval;
+}
+The object assigned to retval is tainted and not for use in sensitive operations.
+private void runCommand(@Untainted String… commands){
+ProcessBuilder processBuilder = new ProcessBuilder(command);
+  Process process = processBuilder.start();
+}
+Each command must be untainted. For example, the previously tainted String must be validated before being passed in here.
+
+
+
+Repeating Annotations
+======================
+Prior to Java8, we cannot declare more than one annotation of the same type to the same location of a code.
+Java8 introduces the repeating annotation by which same annotations can be repeated as much as you want at same locations.
+Repeating Annotations make it easier because there is less need for wrapper annotations
+
+
+Examples
+=========
+For example, doPeriodicCleanup method is executed on the last day of the month and on every Friday at 11:00 p.m. to do a clean up activity after a batch job is executed.
+@Schedule(dayOfMonth="last")
+@Schedule(dayOfWeek="Fri", hour="23")
+public void doPeriodicCleanup() { ... }
+The previous example applies an annotation to a method.
+Another example, there is a class for handling unauthorized access exceptions. You annotate the class with one @Alert annotation for managers and another for admins:
+@Alert(role="Manager")
+@Alert(role="Administrator")
+public class UnauthorizedAccessException extends SecurityException { ... }
+
+
+Retrieving Annotations
+=======================
+There are 2 ways to retreive them
+Accessing them via their container annotation using getDeclaredAnnotation() or getAnnotation().
+Accessing them via the getAnnotationsByType() or getDeclaredAnnotationsByType()
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+public class App {
+   @Retention( RetentionPolicy.RUNTIME )
+    public @interface Cars {
+        Manufacturer[] value() default{};
+    }
+    @Manufacturer( "Mercedes Benz")
+    @Manufacturer( "Toyota")
+    @Manufacturer( "BMW")
+    @Manufacturer( "Range Rover")
+    public interface Car { 
+    }
+    @Repeatable(value = Cars.class )
+    public @interface Manufacturer {
+        String value();
+    };
+    public static void main(String[] args) {
+        Manufacturer[] a = Car.class.getAnnotationsByType(Manufacturer.class );
+        System.out.println("Number of car manufacturers is "+ a.length );
+        System.out.println("\n-------Printing out Car Manufacturers--------");
+        Cars cars = Car.class.getAnnotation(Cars.class);
+        for(Manufacturer car: cars.value()){
+            System.out.println(car.value());
+       }
+    }
+}
+Output:
+--------
+Number of car manufacturers is 4
+------Printing out Car Manufacturers--------
+Mercedes Benz
+Toyota
+BMW
+Range Rover
+
+
+
+
+
+
+
+
+
