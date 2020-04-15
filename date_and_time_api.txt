@@ -1,0 +1,171 @@
+Date and Time API:
+==================
+New series of date and time APIs are created in the new java.time package.
+Following are some of the important classes introduced in java.time package −
+Local − Simplified date-time API with no complexity of timezone handling.
+Zoned − Specialized date-time API to deal with various timezones.
+
+
+Why new API for Date & Time?
+============================
+Not thread safe - java.util.Date is not thread safe, thus developers have to deal with concurrency issue while using date. The new date-time API is immutable and does not have setter methods.
+Poor design - Default Date starts from 1900, month starts from 1, and day starts from 0, so no uniformity. The old API had less direct methods for date operations. The new API provides numerous utility methods for such operations.
+Difficult time zone handling - Developers had to write a lot of code to deal with timezone issues. The new API has been developed keeping domain-specific design in mind.
+
+
+Examples
+========
+Example 1:
+
+Simple example to use the new API for Date and Time operations.
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+public class GetCurrentDateTime {
+    private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+ public static void main(String[] args) {
+        Date date = new Date();
+        System.out.println(sdf.format(date));
+        Calendar cal = Calendar.getInstance();
+        System.out.println(sdf.format(cal.getTime()));
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now));
+        LocalDate localDate = LocalDate.now();
+  System.out.println(DateTimeFormatter.ofPattern("yyy/MM/dd").format(localDate));
+    }
+}
+
+Example 2:
+----------
+Convert string to local date time
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
+public class TestDate2 {
+    public static void main(String[] args) {
+        String now = "2017-06-13 12:30";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime formatDateTime = LocalDateTime.parse(now, formatter);
+  System.out.println("Before : " + now);
+        System.out.println("After : " + formatDateTime);
+        System.out.println("After : " + formatDateTime.format(formatter));
+    }
+}
+
+Example 3:
+----------
+Convert instant to localDateTime
+
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+public class InstantExample1 {
+    public static void main(String[] argv) {
+        Instant instant = Instant.now();
+        System.out.println("Instant : " + instant);
+        LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+        System.out.println("LocalDateTime : " + ldt);
+    }
+}
+
+Example 4:
+----------
+Convert Date to LocalDate and LocalDateTime
+
+import java.time.*;
+import java.util.Date;
+public class DateToJavaTime {
+    public static void main(String[] args) {
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        System.out.println("System Default TimeZone : " + defaultZoneId);
+        Date date = new Date();
+        System.out.println("date : " + date);
+
+ //1. Convert Date -> Instant
+
+        Instant instant = date.toInstant();
+
+        System.out.println("instant : " + instant); 
+
+
+
+        //2. Instant + system default time zone + toLocalDate() = LocalDate
+
+        LocalDate localDate = instant.atZone(defaultZoneId).toLocalDate();
+
+        System.out.println("localDate : " + localDate);
+
+//3. Instant + system default time zone + toLocalDateTime() = LocalDateTime
+
+        LocalDateTime localDateTime = instant.atZone(defaultZoneId).toLocalDateTime();
+
+        System.out.println("localDateTime : " + localDateTime);
+
+
+
+        //4. Instant + system default time zone = ZonedDateTime
+
+        ZonedDateTime zonedDateTime = instant.atZone(defaultZoneId);
+
+        System.out.println("zonedDateTime : " + zonedDateTime);
+
+    }
+
+}
+
+
+Temporal Adjusters
+===================
+In Java 8, predefined java.time.temporal.TemporalAdjusters can be used to adjust a date or Temporal.
+
+Please read below example to print last day of current month and next monday date.
+
+
+        LocalDate with1 = localDate.with(TemporalAdjusters.lastDayOfMonth());
+
+        System.out.println("lastDayOfMonth : " + with1);
+
+
+
+        LocalDate with2 = localDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+
+        System.out.println("next monday : " + with2);
+
+
+java.time.chrono
+=================
+The supported calendar systems includes:
+
+Hijrah calendar
+
+Japanese calendar
+
+Minguo calendar
+
+Thai Buddhist calendar
+
+Simple code snippet to print today's date in list of calenders available.
+
+
+Set<Chronology> chronos = Chronology.getAvailableChronologies();
+
+       for (Chronology chrono : chronos) {
+
+           ChronoLocalDate date = chrono.dateNow();
+
+           System.out.printf("   %20s: %s%n", chrono.getId(), date.toString());
+
+       }
