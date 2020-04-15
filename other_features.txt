@@ -1,0 +1,9 @@
+More features
+==============
+Parallel Sorting - Arrays can be sorted in parallel using Arrays.prallelSort()
+Inbuilt encoder and decoder for Base64 encoding
+Unsigned integers are supported in the new API
+Improved Type Inference
+Method parameter reflection - To obtain the names of formal parameters of any method or constructor
+Optional type - To reduce Null pointer Exceptions
+Permgem replaced with new Metaspace
