@@ -1,0 +1,30 @@
+Java Concurrency Utilities
+===========================
+java.util.concurrent : Utility classes used in concurrent programming.
+This package is enhanced with aggregate operations based on newly added Lambda expressions and stream api.
+
+
+Why Concurrent util Package?
+=============================
+With the increasingly complexity of current applications, many developers find this low level threading concepts difficult to implement.
+The Java platform provides these capabilities that enable developers to write concurrent applications, where different threads execute simultaneously.
+
+
+Standard Java threading difficulties
+=====================================
+Usage of Java low level threading concepts (synchronized, volatile, wait(), notify(), and notifyAll()) may lead to threading hazards like deadlock and thread starvation that hard to detect and debug.
+Relying on synchronized to coordinate access between threads leads to performance issues that affect application scalability
+Developers need higher level constructs like semaphores and thread pools, which Java's low-level threading capabilities don't offer.
+
+
+Executor
+=========
+Executors are capable of running asynchronous tasks and typically manage a pool of threads, so we don't have to create new threads manually.
+Simple Example on how to use executers:
+ExecutorService executor = Executors.newSingleThreadExecutor();
+executor.submit(() -> {
+    String threadName = Thread.currentThread().getName();
+    System.out.println("Hello " + threadName);
+});
+
+
