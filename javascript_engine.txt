@@ -1,0 +1,135 @@
+Rhino
+======
+Rhino is an open-source implementation of JavaScript written entirely in Java.
+It is typically embedded into Java applications to provide scripting to end users. 
+It is embedded in J2SE 6 as the default Java scripting engine.
+Rhino converts JavaScript scripts into classes.
+It is intended to be used in server-side applications, hence there is no built-in support for the Web browser objects that are commonly associated with JavaScript.
+
+
+Nashorn
+========
+Nashorn, pronounced "nass-horn," is German for "rhinoceros," and it's one of the animal names for a German tank destroyer used in World War II.
+Replaces old Rhino engine
+Nashorn uses invokedynamics feature, introduced in Java 7 to improve performance
+
+
+Why Nashorn?
+=============
+According to Jim Laskey of Oracle, the principal developer of Nashorn:
+The performance of Rhino has fallen far behind that of other JavaScript engines.
+In order to improve performance, Rhino would have to be rewritten to replace its interpreter with a code generator designed to fully utilize the JVM. 
+Rather than undertake a major rewrite of the very old Rhino code, we have chosen instead to start from scratch.
+
+
+Nashorn - Benefits
+===================
+Interoperability with Java and JavaScript libraries.
+Scripts do not need to be compiled.
+Fast execution and multi-threading of JavaScript running in Java’s JRE.
+The ability to remotely debug applications using an IDE like NetBeans, Eclipse, or IntelliJ (instructions on the Nashorn blog).
+Automatic integration with Java monitoring tools, such as performance, health, and SIEM.
+
+
+Nashorn - Limitations
+======================
+Nashorn will only support ECMAScript-262 Edition 5.1. It will not support any features of Edition 6 or any nonstandard features provided by other JavaScript implementations.
+Nashorn will not include a browser plug-in API.
+Nashorn will not include support for DOM/CSS or any related libraries (such as jQuery, Prototype, or Dojo).
+Nashorn will not include direct debugging support.
+
+
+Javascript execution
+=====================
+Nashorn javascript engine can either be used programmatically from java programs or by utilizing the command line tool jjs, which is located in $JAVA_HOME/bin
+###From Command prompt
+For Nashorn engine, JAVA 8 introduces a new command line tool, jjs to execute java script code at console.
+
+
+Execution - Command prompt - Example
+=====================================
+Create and save fresco.js in c: > JAVA folder.
+fresco.js
+print('Welcome to Fresco world!');
+Open console and use the following command to execute the script
+C:\JAVA>jjs sample.js
+
+
+Execution within Java code
+===========================
+public class App {
+   public static void main(String args[]){
+      ScriptEngineManager scriptEngineManager = new ScriptEngineManager(); 
+      ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn"); 
+      String name = "Fresco"; 
+      Integer result = null;
+      try{
+         nashorn.eval("print('" + name + "')");
+         result = (Integer) nashorn.eval("10+10+10");   
+      }catch(ScriptException e){
+        System.out.println("Error executing script: "+ e.getMessage());
+      }
+      System.out.println("Total Courses :"+result.toString());
+   } 
+}
+
+
+Nashorn Java API
+=================
+Invoking Java Methods from Javascript
+Example
+static String fun1(String name) {
+    System.out.format("Hi Fresco Learner, %s", name);
+    return "Welcome to Fresco Play";
+}
+Java classes can be referenced from javascript via the Java.type API extension.
+var MyJavaClass = Java.type('package_name.Class_name');
+var result = MyJavaClass.fun1('John');
+print(result);
+
+
+Script Object Mirror
+=====================
+When passing native javascript objects to java you can utilize the class ScriptObjectMirror which is actually a java representation of the underlying javascript object.
+
+
+Nashorn java API
+=================
+####Typed Arrays
+Native javascript arrays are untyped. Nashorn enables you to use typed java arrays in javascript
+Please refer below code snippet
+var IntArray = Java.type("int[]");
+var array = new IntArray(5);
+array[0] = 5;
+array[1] = 4;
+array[2] = 3;
+array[3] = 2;
+array[4] = 1;
+The int[] array behaves like a real java int array. But additionally Nashorn performs implicit type conversions under the hood when we're trying to add non-integer values to the array.
+
+####Collections
+In order to iterate over collections and arrays Nashorn introduces the for each statement. It works just like the foreach loop in java.
+Please refer to code snippet below
+var ArrayList = Java.type('java.util.ArrayList');
+var list = new ArrayList();
+list.add('tomato');
+list.add('onion');
+list.add('potato');
+for each (var el in list) print(el); 
+
+####Lambda expressions and Streams
+Although ECMAScript 5.1 lacks the compact arrow syntax from the Java 8 lambda expressions, we can use function literals where ever lambda expressions are accepted.
+Example
+var list2 = new java.util.ArrayList();
+list2.add("Mahesh");
+list2.add("David");
+list2.add("Mahesh Ram");
+list2.add("Murugan");
+list2.stream().filter(function(el) {
+        return el.startsWith("Mahesh");
+    })
+    .sorted()
+    .forEach(function(el) {
+        print(el);
+    });
+
