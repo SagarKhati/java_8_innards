@@ -1,0 +1,91 @@
+Default Methods:
+================
+Allows the interfaces to have methods with implementation without affecting the classes that implement the interface.
+Methods are defined inside the interface and tagged with default.
+Default methods are non-abstract methods.
+For creating a default method in java interface, we need to use default keyword with the method signature.
+default void <<method_name>>(){
+}
+
+interface Sayable{  
+    // Default method   
+    default void say(){  
+        System.out.println("Hello, this is default method");  
+    }  
+    // Abstract method  
+    void sayMore(String msg);  
+}  
+public class DefaultMethods implements Sayable{  
+    public void sayMore(String msg){        // implementing abstract method   
+        System.out.println(msg);  
+    }  
+    public static void main(String[] args) {  
+        DefaultMethods dm = new DefaultMethods();  
+        dm.say();   // calling default method  
+        dm.sayMore("Work is worship");  // calling abstract method  
+  
+    }  
+}
+
+
+Why Default methods?
+====================
+Modifying one interface in JDK framework breaks all classes that extends the interface. Which means that adding any new method could break millions of lines of code.
+Reengineering the JDK framework is very complex.
+Example:
+Default method forEach() added to Iterable interface
+public interface Iterable<T> {
+   public default void forEach(Consumer<? super T> consumer) {
+      for (T t : this) {
+         consumer.accept(t);
+      }
+   }
+}
+
+
+Extending Interfaces:
+=====================
+While another interface extending an interface that contains a default method, either of the below options should be considered.
+Not mention the default method at all, which lets your extended interface inherit the default method
+Re declare the default method, which makes it abstract
+Redefine the default method, which overrides it
+public interface WildAnimal{
+   default void print(){
+      System.out.println("Wild Animal");
+   }
+}
+public interface Mammal{
+   default void print(){
+      System.out.println("Mammal");
+   }
+}
+public class Tiger implements WildAnimal, Mammal {
+}
+
+// Option A: Create new method in Tiger class that overrides the default implementation.
+public class Tiger implements WildAnimal, Mammal {
+public void print(){
+  System.out.println("Wild Animal - Mammal");
+}
+}
+
+// Option B: Call the default method of the specified interface using super.
+public class Tiger implements WildAnimal, Mammal {
+public void print(){
+  WildAnimal.super.print();
+}
+}
+
+
+Best Practices:
+===============
+Prefer Standard Functional Interfaces than creating new functional interfaces
+Use the @FunctionalInterface Annotation
+Don’t Overuse Default Methods in Functional Interfaces
+Instantiate Functional Interfaces with Lambda Expressions
+Avoid overloading methods with functional Interface as parameters
+Do not treat lambda expressions as Inner class
+Keep lambda expressions short and self explanatory
+Use Effectively final variable
+Protect object variables from mutation
+
